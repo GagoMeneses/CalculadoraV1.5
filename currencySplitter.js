@@ -8,26 +8,33 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function handleMultiCurrencyChange() {
-  // Obtener el cambio debido almacenado desde localStorage
   const changeDue = parseFloat(localStorage.getItem('changeDue'));
-  const currency = localStorage.getItem('changeCurrency');
 
-  // Continúa solo si changeDue es un número válido
   if (!isNaN(changeDue)) {
       let firstCurrencyAmount = parseFloat(document.getElementById('firstCurrencyAmount').value);
       let firstCurrency = document.getElementById('firstCurrency').value;
+
+      // Convert 'firstCurrencyAmount' to the currency of 'changeDue' for accurate comparison
+      const changeCurrency = localStorage.getItem('changeCurrency'); // Assuming 'changeDue' is in this currency
+      let firstCurrencyAmountInChangeCurrency = convertCurrency(firstCurrencyAmount, firstCurrency, changeCurrency);
+
+      // Ensure the converted 'firstCurrencyAmount' does not exceed 'changeDue'
+      if (firstCurrencyAmountInChangeCurrency > changeDue) {
+          alert("El monto en la primera moneda, convertido al cambio debido, no puede ser mayor que el cambio debido.");
+          // Reset or adjust the 'firstCurrencyAmount' input if necessary
+          return; // Stop execution to prevent processing an invalid amount
+      }
+
       let secondCurrency = document.getElementById('secondCurrency').value;
-
-      // Asume que ya tienes implementada la función convertCurrency()
-      let remainingChange = changeDue - firstCurrencyAmount;
-      let secondCurrencyAmount = convertCurrency(remainingChange, firstCurrency, secondCurrency);
-
-      // Asume que ya tienes implementada la función showMultiCurrencyChange()
+      let remainingChange = changeDue - firstCurrencyAmountInChangeCurrency;
+      let secondCurrencyAmount = convertCurrency(remainingChange, changeCurrency, secondCurrency);
       showMultiCurrencyChange(firstCurrencyAmount, firstCurrency, secondCurrencyAmount, secondCurrency);
   } else {
       console.error("No hay cambio debido almacenado para ser dividido en dos monedas.");
   }
 }
+
+
 
 
 
